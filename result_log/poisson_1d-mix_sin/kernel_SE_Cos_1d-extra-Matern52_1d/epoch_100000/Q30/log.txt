@@ -1,0 +1,10 @@
+llk_weight-500.0--nu-1-Q-30-epoch-100000-lr-0.0100-freqscale=20-logdet-1extra_GP-x-2pi-Ncol-900
+err_mean: 0.0021, err_std: 0.0000, used_time: 4452.1673, avg_time: 4452.1673, avg_epochs 100000 
+err_list: [DeviceArray(0.00213061, dtype=float64)]
+
+
+llk_weight-200.0--nu-1-Q-30-epoch-100000-lr-0.0100-freqscale=20-logdet-1extra_GP-x-2pichange_point-0.1-Ncol-400
+err_mean: 0.0118, err_std: 0.0000, used_time: 986.9136, avg_time: 986.9136, avg_epochs 100000 
+err_list: [Array(0.0118395, dtype=float64)]
+
+

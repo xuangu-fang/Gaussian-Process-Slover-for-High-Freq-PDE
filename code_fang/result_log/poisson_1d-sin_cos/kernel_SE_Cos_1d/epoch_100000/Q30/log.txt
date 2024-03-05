@@ -1,0 +1,45 @@
+llk_weight-200.0--nu-1-Q-30-epoch-100000-lr-0.0100-freqscale=20-logdet-1-x-2pi-Ncol-10multi-reso-test
+err_mean: 0.9996, err_std: 0.0000, used_time: 71.2922, avg_time: 71.2922, avg_epochs 100000 
+err_list: [Array(0.99957291, dtype=float64)]
+
+
+llk_weight-200.0--nu-1-Q-30-epoch-100000-lr-0.0100-freqscale=20-logdet-1-x-2pi-Ncol-50multi-reso-test
+err_mean: 0.7764, err_std: 0.0000, used_time: 865.1445, avg_time: 865.1445, avg_epochs 100000 
+err_list: [Array(0.77635982, dtype=float64)]
+
+
+llk_weight-200.0--nu-1-Q-30-epoch-100000-lr-0.0100-freqscale=20-logdet-1-x-2pi-Ncol-100multi-reso-test
+err_mean: 0.9127, err_std: 0.0000, used_time: 204.2284, avg_time: 204.2284, avg_epochs 100000 
+err_list: [Array(0.91266893, dtype=float64)]
+
+
+llk_weight-200.0--nu-1-Q-30-epoch-100000-lr-0.0100-freqscale=20-logdet-1-x-2pi-Ncol-200multi-reso-test
+err_mean: 0.8352, err_std: 0.0000, used_time: 470.6015, avg_time: 470.6015, avg_epochs 100000 
+err_list: [Array(0.83519809, dtype=float64)]
+
+
+llk_weight-200.0--nu-1-Q-30-epoch-100000-lr-0.0100-freqscale=20-logdet-1-x-2pi-Ncol-300multi-reso-test
+err_mean: 0.0000, err_std: 0.0000, used_time: 873.4866, avg_time: 873.4866, avg_epochs 100000 
+err_list: [Array(1.5490362e-05, dtype=float64)]
+
+
+llk_weight-200.0--nu-1-Q-30-epoch-100000-lr-0.0100-freqscale=20-logdet-1-x-2pi-Ncol-200multi-reso-test
+err_mean:0.7764 , err_std: 0.0000, used_time: 505.8761, avg_time: 505.8761, avg_epochs 100000 
+err_list: [Array(0.83519809, dtype=float64)]
+
+
+llk_weight-200.0--nu-1-Q-30-epoch-100000-lr-0.0100-freqscale=20-logdet-1-x-2pi-Ncol-100multi-reso-test
+err_mean:0.8352 , err_std: 0.0000, used_time: 241.9516, avg_time: 241.9516, avg_epochs 100000 
+err_list: [Array(0.91266893, dtype=float64)]
+
+
+llk_weight-200.0--nu-1-Q-30-epoch-100000-lr-0.0100-freqscale=20-logdet-1-x-2pi-Ncol-50multi-reso-test
+err_mean: 0.9127, err_std: 0.0000, used_time: 982.3061, avg_time: 982.3061, avg_epochs 100000 
+err_list: [Array(0.77635982, dtype=float64)]
+
+
+llk_weight-200.0--nu-1-Q-30-epoch-100000-lr-0.0100-freqscale=20-logdet-1-x-2pi-Ncol-10multi-reso-test
+err_mean: 0.9996, err_std: 0.0000, used_time: 71.2983, avg_time: 71.2983, avg_epochs 100000 
+err_list: [Array(0.99957291, dtype=float64)]
+
+

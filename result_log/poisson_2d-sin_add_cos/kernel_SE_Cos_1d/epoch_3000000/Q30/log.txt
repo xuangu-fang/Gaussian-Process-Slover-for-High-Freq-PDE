@@ -1,0 +1,5 @@
+llk_weight-200.0--nu-1-Q-30-epoch-3000000-lr-0.0100-freqscale=30-logdet-1
+err_mean: 0.1486, err_std: 0.0000, used_time: 18546.0448, avg_time: 18546.0448, avg_epochs 3000000 
+err_list: [Array(0.1485715, dtype=float64)]
+
+

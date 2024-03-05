@@ -1,0 +1,25 @@
+llk_weight-200.0--nu-1-Q-30-epoch-1000000-lr-0.0100-freqscale=30-logdet-1-change-point-0.01
+err_mean: 0.0015, err_std: 0.0000, used_time: 3758.6579, avg_time: 3758.6579, avg_epochs 950000 
+err_list: [DeviceArray(0.00152658, dtype=float64)]
+
+
+llk_weight-200.0--nu-1-Q-30-epoch-1000000-lr-0.0100-freqscale=30-logdet-1-change-point-0.05
+err_mean: 0.0106, err_std: 0.0000, used_time: 4023.6821, avg_time: 4023.6821, avg_epochs 1000000 
+err_list: [DeviceArray(0.01058981, dtype=float64)]
+
+
+llk_weight-200.0--nu-1-Q-30-epoch-1000000-lr-0.0100-freqscale=30-logdet-1-change-point-0.1
+err_mean: 0.0004, err_std: 0.0000, used_time: 4345.3830, avg_time: 4345.3830, avg_epochs 1000000 
+err_list: [DeviceArray(0.0003792, dtype=float64)]
+
+
+llk_weight-200.0--nu-1-Q-30-epoch-1000000-lr-0.0100-freqscale=30-logdet-1
+err_mean: 0.0004, err_std: 0.0000, used_time: 4667.1591, avg_time: 4667.1591, avg_epochs 1000000 
+err_list: [DeviceArray(0.00035092, dtype=float64)]
+
+
+llk_weight-200.0--nu-1-Q-30-epoch-1000000-lr-0.0100-freqscale=30-logdet-1extra_GP_change_point_0.3x_scale_2pi
+err_mean: 0.9963, err_std: 0.0000, used_time: 3969.1309, avg_time: 3969.1309, avg_epochs 1000000 
+err_list: [Array(0.9963307, dtype=float64)]
+
+

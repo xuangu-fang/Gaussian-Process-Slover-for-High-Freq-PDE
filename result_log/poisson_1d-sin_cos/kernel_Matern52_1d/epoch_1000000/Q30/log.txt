@@ -1,0 +1,15 @@
+llk_weight-200.0--nu-1-Q-30-epoch-1000000-lr-0.0100-freqscale=30-logdet-1
+err_mean: 0.0139, err_std: 0.0000, used_time: 1978.5565, avg_time: 1978.5565, avg_epochs 450000 
+err_list: [DeviceArray(0.01386655, dtype=float64)]
+
+
+llk_weight-200.0--nu-1-Q-30-epoch-1000000-lr-0.0100-freqscale=30-logdet-1-x-2pi
+err_mean: 0.7926, err_std: 0.0000, used_time: 3890.6630, avg_time: 3890.6630, avg_epochs 1000000 
+err_list: [DeviceArray(0.79261048, dtype=float64)]
+
+
+llk_weight-200.0--nu-1-Q-30-epoch-1000000-lr-0.0100-freqscale=30-logdet-1-x-2pi-Ncol-200
+err_mean: 0.7926, err_std: 0.0000, used_time: 2777.4577, avg_time: 2777.4577, avg_epochs 1000000 
+err_list: [Array(0.79259695, dtype=float64)]
+
+

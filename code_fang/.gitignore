@@ -1,0 +1,12 @@
+.idea
+.ipynb
+.DS_Store
+.ipynb_checkpoints/
+__pycache__
+*.pyc
+*.hkl
+*.mat
+.Trash-0
+__dump__
+__temp__
+
