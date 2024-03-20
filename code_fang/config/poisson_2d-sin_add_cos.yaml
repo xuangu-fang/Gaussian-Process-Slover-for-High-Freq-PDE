@@ -1,6 +1,6 @@
 
 
-equation: "poisson_2d-sin_sin" # jnp.sin(100 * x) * jnp.sin(100 * y),
+equation: "poisson_2d-sin_add_cos" # jnp.sin(6 * x) * jnp.cos(20 * x) + jnp.sin(6 * y) * jnp.cos(20 * y)
 num_u_trick: 1
 Q: 30
 lr: 0.01
@@ -9,11 +9,7 @@ freq_scale: 20
 logdet: True
 num_fold: 1     # as it's a deterministic algorithm, we can run it for only one fold
 tol: -1 # set as positive value to enable the early stopping
-N_col: 400
+N_col: 200
 scale: '2pi'
 other_paras: '-x-2pi'
-nepoch: 100000
-
-# sub-optimal parameters
-# N_col: 200
-# nepoch: 1000000
+nepoch: 1000000

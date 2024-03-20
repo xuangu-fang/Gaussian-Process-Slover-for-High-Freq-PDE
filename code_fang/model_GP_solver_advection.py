@@ -23,13 +23,13 @@ import fire
 from infras.misc import create_path
 from infras.exp_config import ExpConfig
 
-'''GP solver class for 2d dynamics with single kernel,
- now support poisson-2d and allen-cahn-2d'''
+
+'''GP solver class for 1d advection-like dynamics (only u_x, u_y invloved in the equation) with single kernel'''
 
 
-class GP_solver_2d_single(object):
+class GP_solver_2d_single_advection(object):
 
-    # equation: u_{xx} + u_{yy}  = f(x,y,u)
+    # advection 1d: beta * u_x + u_y= 0
     # bvals: 1d array, boundary values
     # X_col = (x_pos, y_pos), x_pos: 1d array, y_pos: 1d array
     # src_vals: source values at the collocation mesh, N1 x N2
@@ -66,6 +66,8 @@ class GP_solver_2d_single(object):
         self.Xte = X_test
         self.ute = u_test
 
+        self.beta = trick_paras['beta']
+
         self.params = None  # to be assugned after training the mixture-GP
         self.pred_func = None  # to be assugned when starting prediction
 
@@ -77,14 +79,14 @@ class GP_solver_2d_single(object):
                                                                indexing='ij')
 
         self.eq_type = trick_paras['equation'].split('-')[0]
-        assert self.eq_type in ['poisson_2d', 'allencahn_2d']
+        assert self.eq_type in ['advection']
 
         print('equation is: ', self.trick_paras['equation'])
         print('kernel is:', self.cov_func.__class__.__name__)
 
     @partial(jit, static_argnums=(0, ))
     def value_and_grad_kernel(self, params, key):
-        '''compute the value of the kernel matrix (K1, K2), along with K1inv_u, K2inv_u and u_xx, u_yy'''
+        '''compute the value of the kernel matrix (K1, K2), along with K1inv_u, K2inv_u and u_x, u_y'''
 
         U = params['U']  # function values at the collocation points, N1 X N2
         kernel_paras_x = params[
@@ -102,38 +104,34 @@ class GP_solver_2d_single(object):
         K1inv_U = jnp.linalg.solve(K1, U)  # N1 x N2
         K2inv_Ut = jnp.linalg.solve(K2, U.T)  # N2 x N1
 
-        K_dxx1 = vmap(self.cov_func.DD_x1_kappa,
-                      (0, 0, None))(self.x_pos_tr_mesh.reshape(-1),
-                                    self.x_pos_tr_mesh_T.reshape(-1),
-                                    kernel_paras_x).reshape(self.N1, self.N1)
+        K_dx1 = vmap(self.cov_func.D_x1_kappa,
+                     (0, 0, None))(self.x_pos_tr_mesh.reshape(-1),
+                                   self.x_pos_tr_mesh_T.reshape(-1),
+                                   kernel_paras_x).reshape(self.N1, self.N1)
 
-        U_xx = jnp.matmul(K_dxx1, K1inv_U)
+        U_x = jnp.matmul(K_dx1, K1inv_U)
 
-        K_dyy1 = vmap(self.cov_func.DD_x1_kappa,
-                      (0, 0, None))(self.y_pos_tr_mesh.reshape(-1),
-                                    self.y_pos_tr_mesh_T.reshape(-1),
-                                    kernel_paras_y).reshape(self.N2, self.N2)
+        K_dy1 = vmap(self.cov_func.D_x1_kappa,
+                     (0, 0, None))(self.y_pos_tr_mesh.reshape(-1),
+                                   self.y_pos_tr_mesh_T.reshape(-1),
+                                   kernel_paras_y).reshape(self.N2, self.N2)
 
-        U_yy = jnp.matmul(K_dyy1, K2inv_Ut).T
+        U_y = jnp.matmul(K_dy1, K2inv_Ut).T
 
-        return K1, K2, K1inv_U, K2inv_Ut, U_xx, U_yy
+        return K1, K2, K1inv_U, K2inv_Ut, U_x, U_y
 
     @partial(jit, static_argnums=(0, ))
-    def boundary_and_eq_gap(self, U, U_xx, U_yy):
+    def boundary_and_eq_gap(self, U, U_x, U_y):
         """compute the boundary and equation gap, to construct the training loss or computing the early stopping criteria"""
         # boundary
+
         u_b = jnp.hstack((U[0, :], U[-1, :], U[:, 0], U[:, -1]))
         boundary_gap = jnp.sum(
             jnp.square(u_b.reshape(-1) - self.bvals.reshape(-1)))
         # equation
-        if self.eq_type == 'poisson_2d':
+        if self.eq_type == 'advection':
 
-            eq_gap = jnp.sum(jnp.square(U_xx + U_yy - self.src_vals))
-
-        elif self.eq_type == 'allencahn_2d':
-
-            eq_gap = jnp.sum(
-                jnp.square(U_xx + U_yy + U * (U**2 - 1) - self.src_vals))
+            eq_gap = jnp.sum(jnp.square(self.beta * U_x + U_y - self.src_vals))
 
         else:
             raise NotImplementedError
@@ -147,10 +145,10 @@ class GP_solver_2d_single(object):
         log_tau = params['log_tau']
         log_v = params['log_v']
 
-        K1, K2, K1inv_U, K2inv_Ut, U_xx, U_yy = self.value_and_grad_kernel(
+        K1, K2, K1inv_U, K2inv_Ut, U_x, U_y = self.value_and_grad_kernel(
             params, key)
 
-        boundary_gap, eq_gap = self.boundary_and_eq_gap(U, U_xx, U_yy)
+        boundary_gap, eq_gap = self.boundary_and_eq_gap(U, U_x, U_y)
 
         # prior
         log_prior = -0.5 * self.N2 * jnp.linalg.slogdet(
@@ -221,10 +219,10 @@ class GP_solver_2d_single(object):
     def compute_early_stopping(self, params, key):
         """compute the early stopping criteria"""
 
-        K1, K2, K1inv_U, K2inv_Ut, U_xx, U_yy = self.value_and_grad_kernel(
+        K1, K2, K1inv_U, K2inv_Ut, U_x, U_y = self.value_and_grad_kernel(
             params, key)
         boundary_gap, eq_gap = self.boundary_and_eq_gap(
-            params['U'], U_xx, U_yy)
+            params['U'], U_x, U_y)
 
         criterion = boundary_gap / self.Nb + eq_gap / self.Nc
 
@@ -322,13 +320,12 @@ class GP_solver_2d_single(object):
                 criterion = self.compute_early_stopping(params, sub_key)
                 print('criterion = %g' % criterion)
 
-                if self.trick_paras['tol'] >0:
-                    if criterion < self.trick_paras['tol']:
-                        print('early stop at epoch %d' % (i))
-                        early_stopping['flag'] = True
-                        early_stopping['epoch'] = i
-                        break
-
+                # if i > 0 and (criterion < self.trick_paras['tol']
+                #               or error_increase_count > 7):
+                #     print('early stop at epoch %d' % (i))
+                #     early_stopping['flag'] = True
+                #     early_stopping['epoch'] = i
+                #     break
 
         log_dict = {
             'loss_list': loss_list,
@@ -345,23 +342,24 @@ class GP_solver_2d_single(object):
         print('finish training ...')
 
         self.params = params
-
+        # other_paras = '-extra-GP'
+        # other_paras = self.trick_paras[
+        #     'other_paras'] + '-change_point-%.2f' % self.trick_paras[
+        #         'change_point']
+        # utils.make_fig_1d_extra_GP(self, params_extra, log_dict, other_paras)
 
         return log_dict, early_stopping, min_err
 
 
-def get_source_val(u, x_pos, y_pos, equation_type):
+def get_source_val(u, x_pos, y_pos, equation_type, beta):
     x_mesh, y_mesh = np.meshgrid(x_pos, y_pos, indexing='ij')
     x_vec = x_mesh.reshape(-1)
     y_vec = y_mesh.reshape(-1)
 
-    if equation_type == 'poisson_2d':
-        return vmap(grad(grad(u, 0), 0), (0, 0))(x_vec, y_vec) + \
-            vmap(grad(grad(u, 1), 1), (0, 0))(x_vec, y_vec)
-    elif equation_type == 'allencahn_2d':
-        return vmap(grad(grad(u, 0), 0), (0, 0))(x_vec, y_vec) + \
-            vmap(grad(grad(u, 1), 1), (0, 0))(x_vec, y_vec) + \
-            u(x_vec, y_vec)*(u(x_vec, y_vec)**2-1)
+    if equation_type == 'advection':
+        return beta*(vmap(grad(u, 0), (0, 0))(x_vec, y_vec)) + vmap(grad(u, 1), (0, 0))(x_vec, y_vec)
+    else:
+        raise NotImplementedError
 
 
 def get_mesh_data(u, M1, M2,scale):
@@ -376,26 +374,21 @@ def get_boundary_vals(u_mesh):
     return jnp.hstack((u_mesh[0, :], u_mesh[-1, :], u_mesh[:, 0], u_mesh[:,
                                                                          -1]))
 
+def get_boundary_vals_only_init(u_mesh):
+    """use init conditions (t=0) only"""
+    return jnp.hstack((u_mesh[:, 0],))
 
 def test(trick_paras):
 
     # equation
+    beta = trick_paras['beta']
     equation_dict = {
-        'poisson_2d-sin_sin':
-        lambda x, y: jnp.sin(100 * x) * jnp.sin(100 * y),
-        'poisson_2d-sin_cos':
-        lambda x, y: jnp.sin(100 * x) * jnp.cos(100 * y),
-        'poisson_2d-sin_add_cos':
-        lambda x, y: jnp.sin(6 * x) * jnp.cos(20 * x) + jnp.sin(
-            6 * y) * jnp.cos(20 * y),
-        'allencahn_2d-mix-sincos':
-        lambda x, y: (jnp.sin(x) + 0.1 * jnp.sin(20 * x) + jnp.cos(100 * x)) *
-        (jnp.sin(y) + 0.1 * jnp.sin(20 * y) + jnp.cos(100 * y)),
+        'advection-sin':
+        lambda x, y: jnp.sin(x-beta*y),
     }
 
     u = equation_dict[trick_paras['equation']]
     eq_type = trick_paras['equation'].split('-')[0]
-
     scale = trick_paras['scale']
 
     M = 300
@@ -405,9 +398,12 @@ def test(trick_paras):
     N = trick_paras['N_col']
 
     x_pos_tr, y_pos_tr, u_mh = get_mesh_data(u, N, N,scale)
+    # bvals = get_boundary_vals_only_init(u_mh)
+    
     bvals = get_boundary_vals(u_mh)
 
-    src_vals = get_source_val(u, x_pos_tr, y_pos_tr, eq_type)
+
+    src_vals = get_source_val(u, x_pos_tr, y_pos_tr, eq_type, beta)
     src_vals = src_vals.reshape((x_pos_tr.size, y_pos_tr.size))
     X_test = (x_pos_test, y_pos_test)
     u_test = u_test_mh
@@ -419,11 +415,10 @@ def test(trick_paras):
     start_time = time.time()
 
     for fold in range(trick_paras['num_fold']):
-    # as it's a deterministic algorithm, we can run it for only one fold
 
         print('fold %d training' % fold)
 
-        model_PIGP = GP_solver_2d_single(
+        model_PIGP = GP_solver_2d_single_advection(
             bvals,
             X_col,
             src_vals,
@@ -433,6 +428,9 @@ def test(trick_paras):
             trick_paras,
         )
 
+        # use the fold id as the random seed
+        # np.random.seed(fold)
+        # random.seed(fold)
         log_dict, early_stopping, min_err = model_PIGP.train(
             trick_paras['nepoch'], fold)
 
@@ -462,14 +460,17 @@ def test(trick_paras):
     print('finish writing log ...')
 
 
-def evals(**kwargs):
 
+
+
+def evals(**kwargs):
+    
     args = ExpConfig()
     args.parse(kwargs)
 
     # check the validity of the equation and kernel
     
-    assert args.equation in ['poisson_2d-sin_cos', 'poisson_2d-sin_sin', 'poisson_2d-sin_add_cos', 'allencahn_2d-mix-sincos']
+    assert args.equation in [ 'advection-sin']
     
     config_path = "./config/" + args.equation + ".yaml"
 
@@ -503,15 +504,10 @@ def evals(**kwargs):
     print('equation: %s, kernel: %s, freq_scale: %d' %
                 (config['equation'], config['kernel'].__name__, config['freq_scale']))
     
-    config['other_paras'] = config['other_paras'] + '-Ncol-%d' % config['N_col']
+    config['other_paras'] = config['other_paras'] +'-beta-%d' %  config['beta']+ '-Ncol-%d' % config['N_col']
 
     test(config)
     
 if __name__ == '__main__':
     
     fire.Fire(evals) 
-    
-    
-
-
-
