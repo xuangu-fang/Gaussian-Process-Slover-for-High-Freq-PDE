@@ -1,5 +1,0 @@
-llk_weight-200.0--nu-1-Q-30-epoch-3000-lr-0.0100-freqscale=30-logdet-1-x-1-Ncol-200
-err_mean: 0.4668, err_std: 0.0000, used_time: 45.2542, avg_time: 45.2542, avg_epochs 3000 
-err_list: [Array(0.4667826, dtype=float64)]
-
-

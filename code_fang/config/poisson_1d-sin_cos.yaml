@@ -1,6 +1,6 @@
 
 
-equation: "poisson_2d-sin_sin" # jnp.sin(100 * x) * jnp.sin(100 * y),
+equation: "poisson_1d-sin_cos" # sin(6x)cos(100x)
 num_u_trick: 1
 Q: 30
 lr: 0.01
@@ -13,3 +13,4 @@ N_col: 400
 scale: '2pi'
 other_paras: '-x-2pi'
 nepoch: 100000
+

@@ -6,7 +6,7 @@ import os
 import pickle
 import model_GP_solver_1d
 import model_GP_solver_2d
-import model_GP_solver_2d_advection
+import model_GP_solver_advection
 import model_GP_solver_1d_extra
 
 

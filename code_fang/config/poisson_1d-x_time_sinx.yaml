@@ -1,15 +1,15 @@
 
 
-equation: "poisson_2d-sin_sin" # jnp.sin(100 * x) * jnp.sin(100 * y),
+equation: "poisson_1d-x_time_sinx" # x * jnp.sin(200 * x),
 num_u_trick: 1
 Q: 30
 lr: 0.01
 llk_weight: 200
-freq_scale: 20
+freq_scale: 50
 logdet: True
 num_fold: 1     # as it's a deterministic algorithm, we can run it for only one fold
 tol: -1 # set as positive value to enable the early stopping
-N_col: 400
+N_col: 900
 scale: '2pi'
 other_paras: '-x-2pi'
 nepoch: 100000

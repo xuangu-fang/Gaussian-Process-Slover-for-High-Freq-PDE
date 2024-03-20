@@ -29,7 +29,8 @@ from infras.exp_config import ExpConfig
 
 class GP_solver_2d_single(object):
 
-    # equation: u_{xx} + u_{yy}  = f(x,y,u)
+    # Poission-equation: u_{xx} + u_{yy}  = f(x,y,u)
+    # Allen-Cahn-equation: u_{xx} + u_{yy} +u(u^2-1) = f(x,y,u)
     # bvals: 1d array, boundary values
     # X_col = (x_pos, y_pos), x_pos: 1d array, y_pos: 1d array
     # src_vals: source values at the collocation mesh, N1 x N2

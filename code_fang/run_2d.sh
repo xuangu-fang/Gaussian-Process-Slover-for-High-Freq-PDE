@@ -1,8 +1,11 @@
     #     kernel-list:
     #    
     #    - Matern52_Cos_1d--->GP-HM-Stm,
+
     #    - SE_Cos_1d--->GP-HM-GM,
+    
     #    - Matern52_1d--->GP-Matern,
+    
     #    - SE_1d--->GP-SE,
     # 
 

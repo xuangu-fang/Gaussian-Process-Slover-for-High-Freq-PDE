@@ -1,5 +1,0 @@
-llk_weight-200.0--nu-1-Q-30-epoch-1000-lr-0.0100-freqscale=30-logdet-1
-err_mean: 0.0111, err_std: 0.0000, used_time: 21.1915, avg_time: 10.5957, avg_epochs 1000 
-err_list: [DeviceArray(0.01106616, dtype=float64), DeviceArray(0.01106616, dtype=float64)]
-
-

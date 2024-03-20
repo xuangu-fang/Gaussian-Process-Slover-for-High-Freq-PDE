@@ -18,6 +18,11 @@ import os
 import copy
 import init_func
 
+import yaml
+import fire
+from infras.misc import create_path
+from infras.exp_config import ExpConfig
+
 
 '''GP solver class for 1d dynamics with single kernel,
  now support poisson-1d and allen-cahn-1d'''
@@ -25,7 +30,8 @@ import init_func
 
 class GP_solver_1d_single(object):
 
-    # equation: u_{xx}  = f(x)
+    # Possion-equation: u_{xx}  = f(x)
+    # Allen-Cahn-equation: u_{xx}  + u(u^2-1)  = f(x)
     # Xind: the indices of X_col that corresponds to training points, i.e., boundary points
     # y: training outputs
     # Xcol: collocation points
@@ -329,9 +335,9 @@ def test(trick_paras):
 
     M = 300
 
-    x_scale = trick_paras['x_scale']
+    scale = trick_paras['scale']
 
-    X_test = np.linspace(0, 1, num=M).reshape(-1, 1)*x_scale
+    X_test = np.linspace(0, 1, num=M).reshape(-1, 1)*scale
     Y_test = u(X_test)
 
 
@@ -339,7 +345,7 @@ def test(trick_paras):
 
     N_col = trick_paras['N_col']
 
-    X_col = np.linspace(0, 1, num=N_col).reshape(-1, 1)*x_scale
+    X_col = np.linspace(0, 1, num=N_col).reshape(-1, 1)*scale
 
     Xind = np.array([0, X_col.shape[0] - 1])
     y = jnp.array([u(X_col[Xind[0]]), u(X_col[Xind[1]])]).reshape(-1)
@@ -385,74 +391,134 @@ def test(trick_paras):
     print('finish writing log ...')
 
 
-if __name__ == '__main__':
 
-    equation_list = [
-        # 'poisson_1d-mix_sin',
-        # 'poisson_1d-single_sin',
+
+def evals(**kwargs):
+
+    args = ExpConfig()
+    args.parse(kwargs)
+
+    # check the validity of the equation and kernel
+    
+    assert args.equation in [       
+        'poisson_1d-mix_sin',
+        'poisson_1d-single_sin',
         'poisson_1d-sin_cos',
-        # 'poisson_1d-x_time_sinx',
-        # 'poisson_1d-x2_add_sinx',
-        # 'allencahn_1d-sin_cos',
-        # 'allencahn_1d-single_sin'
-    ]
+        'poisson_1d-x_time_sinx',
+        'poisson_1d-x2_add_sinx',
+        'allencahn_1d-sin_cos',
+        'allencahn_1d-single_sin'
+        ]
+    
+    config_path = "./config/" + args.equation + ".yaml"
 
-    kernel_list = [
-        Matern52_Cos_1d,
-        SE_Cos_1d,
-        # Matern52_1d,
-        # SE_1d,
-    ]
+    with open(config_path, "r") as f:
+        config = yaml.safe_load(f)
 
-    N_col_list = [300, 200, 100 ,50, 10]  
+    config['equation'] = args.equation
+    config['init_u_trick'] = init_func.zeros
+    config['kernel_extra'] = None
+    
+    if config['scale'] == '2pi':
+        config['scale'] = 2*np.pi
+    else:
+        config['scale'] = 1.0
+    
+    if args.nepoch is not None:
+        config['nepoch'] = args.nepoch
 
-    for N_col in N_col_list:
-
-        for equation in equation_list:
-            for kernel in kernel_list:
-
-                if equation == 'poisson_1d-x2_add_sinx':
-                    freq_scale = 100
-                elif equation == 'poisson_1d-x_time_sinx':
-                    freq_scale = 50
-                else:
-                    # freq_scale = 30
-                    freq_scale = 20
-
-                # uglg code for multi-reso testing
-                if equation == 'poisson_1d-x2_add_sinx':
-                    x_scale = 1
-                    other_paras = '-x-1'
-                else:
-                    x_scale = 2*np.pi
-                    other_paras = '-x-2pi'
+    if args.kernel == 'Matern52_Cos_1d':
+        config['kernel']  = Matern52_Cos_1d
+    elif args.kernel == 'SE_Cos_1d':
+        config['kernel']  = SE_Cos_1d
+    elif args.kernel == 'Matern52_1d':
+        config['kernel']  = Matern52_1d
+    elif args.kernel == 'SE_1d':
+        config['kernel']  = SE_1d
+    else:
+        raise Exception('Invalid Kernel')
 
 
-                print('equation: %s, kernel: %s, freq_scale: %d' %
-                    (equation, kernel.__name__, freq_scale))
+    print('equation: %s, kernel: %s, freq_scale: %d' %
+                (config['equation'], config['kernel'].__name__, config['freq_scale']))
+    
+    config['other_paras'] = config['other_paras'] + '-Ncol-%d' % config['N_col']
 
-                trick_paras = {
-                    'equation': equation,
-                    'init_u_trick': init_func.zeros,
-                    'num_u_trick': 1,
-                    'Q': 30,
-                    'lr': 1e-2,
-                    'llk_weight': 200.0,
-                    'kernel': kernel,
-                    'kernel_extra': None,
-                    'nepoch': 500000,
-                    'freq_scale': freq_scale,
-                    'logdet': True,
-                    'num_fold': 1,
-                    'tol': 1e-2,
-                    'other_paras': other_paras,
-                    'x_scale': x_scale,
-                    'N_col': N_col,
+    test(config)
+    
+if __name__ == '__main__':
+    
+    fire.Fire(evals) 
 
-                }
 
-                trick_paras['other_paras'] = trick_paras['other_paras'] + \
-                    '-Ncol-%d' % trick_paras['N_col']  \
-                            + 'multi-reso-test'
+# if __name__ == '__main__':
 
-                test(trick_paras)
+#     equation_list = [
+#         # 'poisson_1d-mix_sin',
+#         # 'poisson_1d-single_sin',
+#         'poisson_1d-sin_cos',
+#         # 'poisson_1d-x_time_sinx',
+#         # 'poisson_1d-x2_add_sinx',
+#         # 'allencahn_1d-sin_cos',
+#         # 'allencahn_1d-single_sin'
+#     ]
+
+#     kernel_list = [
+#         Matern52_Cos_1d,
+#         SE_Cos_1d,
+#         # Matern52_1d,
+#         # SE_1d,
+#     ]
+
+#     N_col_list = [300, 200, 100 ,50, 10]  
+
+#     for N_col in N_col_list:
+
+#         for equation in equation_list:
+#             for kernel in kernel_list:
+
+#                 if equation == 'poisson_1d-x2_add_sinx':
+#                     freq_scale = 100
+#                 elif equation == 'poisson_1d-x_time_sinx':
+#                     freq_scale = 50
+#                 else:
+#                     # freq_scale = 30
+#                     freq_scale = 20
+
+#                 # uglg code for multi-reso testing
+#                 if equation == 'poisson_1d-x2_add_sinx':
+#                     x_scale = 1
+#                     other_paras = '-x-1'
+#                 else:
+#                     x_scale = 2*np.pi
+#                     other_paras = '-x-2pi'
+
+
+#                 print('equation: %s, kernel: %s, freq_scale: %d' %
+#                     (equation, kernel.__name__, freq_scale))
+
+#                 trick_paras = {
+#                     'equation': equation,
+#                     'init_u_trick': init_func.zeros,
+#                     'num_u_trick': 1,
+#                     'Q': 30,
+#                     'lr': 1e-2,
+#                     'llk_weight': 200.0,
+#                     'kernel': kernel,
+#                     'kernel_extra': None,
+#                     'nepoch': 500000,
+#                     'freq_scale': freq_scale,
+#                     'logdet': True,
+#                     'num_fold': 1,
+#                     'tol': 1e-2,
+#                     'other_paras': other_paras,
+#                     'x_scale': x_scale,
+#                     'N_col': N_col,
+
+#                 }
+
+#                 trick_paras['other_paras'] = trick_paras['other_paras'] + \
+#                     '-Ncol-%d' % trick_paras['N_col']  \
+#                             + 'multi-reso-test'
+
+#                 test(trick_paras)

@@ -14,7 +14,3 @@ scale: '1'
 other_paras: '-x-1'
 nepoch: 200000
 beta: 200
-
-# sub-optimal parameters
-# N_col: 200
-# nepoch: 1000000
