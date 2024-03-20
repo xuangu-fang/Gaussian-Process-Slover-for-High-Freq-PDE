@@ -20,7 +20,7 @@
     #    - advection-sin--->2d(1d) advection equation with solution:.sin(x-beta*y),
 
 
-python model_GP_solver_2d.py -equation='poisson_2d-sin_sin' -kernel='Matern52_Cos_1d' -nepoch=100000
+python model_GP_solver_2d.py -equation='poisson_2d-sin_sin' -kernel='Matern52_Cos_1d' -nepoch=1000000
 
 python model_GP_solver_2d.py -equation='poisson_2d-sin_add_cos' -kernel='Matern52_Cos_1d' -nepoch=1000000
 

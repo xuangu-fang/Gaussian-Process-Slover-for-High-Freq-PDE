@@ -9,7 +9,7 @@ freq_scale: 30
 logdet: True
 num_fold: 1     # as it's a deterministic algorithm, we can run it for only one fold
 tol: -1 # set as positive value to enable the early stopping
-N_col: 200
+N_col: 400
 scale: '1'
 other_paras: '-x-1'
-nepoch: 3000000
+nepoch: 1000000
