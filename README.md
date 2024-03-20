@@ -3,7 +3,7 @@
 **Still under construction, please wait for the official release.**
 ___
 
-Official implementation of the paper **"Solving High Frequency and Multi-Scale PDEs with Gaussian Processes"** [[OpenReview]](https://openreview.net/forum?id=q4AEBLHuA6&referrer=%5BAuthor%20Console%5D(%2Fgroup%3Fid%3DICLR.cc%2F2024%2FConference%2FAuthors%23your-submissions))[[Arxiv](https://arxiv.org/abs/2311.04465)] (ICLR 2024).
+Official implementation of the paper **"Solving High Frequency and Multi-Scale PDEs with Gaussian Processes"** [[OpenReview](https://openreview.net/forum?id=q4AEBLHuA6&referrer=%5BAuthor%20Console%5D(%2Fgroup%3Fid%3DICLR.cc%2F2024%2FConference%2FAuthors%23your-submissions))][[Arxiv](https://arxiv.org/abs/2311.04465)] (ICLR 2024).
 
 
 
@@ -27,7 +27,7 @@ Official implementation of the paper **"Solving High Frequency and Multi-Scale P
 Illustration of the learned solutions of some high-frequency PDEs. 
 <div align=center> <img src="./figs_repo/1d_fig.PNG" width = 100%/> </div>
 <div align=center> <img src="./figs_repo/2d_fig.PNG" width = 100%/> </div>
-<div align=center> <img src="./figs_repo/1d_fig-advection.PNG" width = 100%/> </div>
+<!-- <div align=center> <img src="./figs_repo/1d_fig-advection.PNG" width = 100%/> </div> -->
 
 
 ## Requirements:

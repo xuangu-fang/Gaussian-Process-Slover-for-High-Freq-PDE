@@ -17,6 +17,12 @@ import tqdm
 import os
 import copy
 import init_func
+import yaml
+
+import fire
+from infras.misc import create_path
+from infras.exp_config import ExpConfig
+
 '''GP solver class for 2d dynamics with single kernel,
  now support poisson-2d and allen-cahn-2d'''
 
@@ -416,6 +422,7 @@ def test(trick_paras):
     start_time = time.time()
 
     for fold in range(trick_paras['num_fold']):
+    # as it's a deterministic algorithm, we can run it for only one fold
 
         print('fold %d training' % fold)
 
@@ -461,52 +468,93 @@ def test(trick_paras):
     print('finish writing log ...')
 
 
+# if __name__ == '__main__':
+def evals(**kwargs):
+    # equation_list = [
+    #      'poisson_2d-sin_sin',
+    #     # 'poisson_2d-sin_cos',
+    #     # 'poisson_2d-sin_add_cos',
+    #     # 'allencahn_2d-mix-sincos',
+    # ]
+
+    # kernel_list = [
+    #     Matern52_Cos_1d,
+    #     SE_Cos_1d,
+    #     # Matern52_1d,
+    #     # SE_1d,
+    # ]
+
+    args = ExpConfig()
+    args.parse(kwargs)
+
+    # check the validity of the equation and kernel
+    
+    assert args.equation in ['poisson_2d-sin_cos', 'poisson_2d-sin_sin', 'poisson_2d-sin_add_cos', 'allencahn_2d-mix-sincos']
+    
+    config_path = "./config/" + args.equation + ".yaml"
+
+    with open(config_path, "r") as f:
+        config = yaml.safe_load(f)
+
+    config['equation'] = args.equation
+    config['init_u_trick'] = init_func.zeros
+    config['kernel_extra'] = None
+    
+    if config['scale'] == '2pi':
+        config['scale'] = 2*np.pi
+    
+    if args.nepoch is not None:
+        config['nepoch'] = args.nepoch
+
+    if args.kernel == 'Matern52_Cos_1d':
+        config['kernel']  = Matern52_Cos_1d
+    elif args.kernel == 'SE_Cos_1d':
+        config['kernel']  = SE_Cos_1d
+    elif args.kernel == 'Matern52_1d':
+        config['kernel']  = Matern52_1d
+    elif args.kernel == 'SE_1d':
+        config['kernel']  = SE_1d
+    else:
+        raise Exception('Invalid Kernel')
+
+
+    print('equation: %s, kernel: %s, freq_scale: %d' %
+                (config['equation'], config['kernel'].__name__, config['freq_scale']))
+    
+    config['other_paras'] = config['other_paras'] + '-Ncol-%d' % config['N_col']
+
+    test(config)
+    
 if __name__ == '__main__':
+    
+    fire.Fire(evals) 
+    
+    
+    # for equation in equation_list:
+    #     for kernel in kernel_list:
 
-    equation_list = [
-         'poisson_2d-sin_sin',
-        # 'poisson_2d-sin_cos',
-        # 'poisson_2d-sin_add_cos',
-        # 'allencahn_2d-mix-sincos',
-    ]
+            # freq_scale = 20
 
-    kernel_list = [
-        Matern52_Cos_1d,
-        SE_Cos_1d,
-        # Matern52_1d,
-        # SE_1d,
-    ]
+            # print('equation: %s, kernel: %s, freq_scale: %d' %
+            #     (equation, kernel.__name__, freq_scale))
 
-    N_col_list = [300, 200, 100 ,50, 10]  
-    for N_col in N_col_list:
+            # trick_paras = {
+            #     'equation': equation,
+            #     'init_u_trick': init_func.zeros,
+            #     'num_u_trick': 1,
+            #     'Q': 30,
+            #     'lr': 1e-2,
+            #     'llk_weight': 200.0,
+            #     'kernel': kernel,
+            #     'kernel_extra': None,
+            #     'nepoch': 100000,
+            #     'freq_scale': freq_scale,
+            #     'logdet': True,
+            #     'num_fold': 1,
+            #     'tol': 1e-2,
+            #     'other_paras': '-x-2pi',
+            #     'scale':2*np.pi,
+            #     'N_col': config.N_col,
+            # }
 
-        for equation in equation_list:
-            for kernel in kernel_list:
 
-                freq_scale = 20
-
-                print('equation: %s, kernel: %s, freq_scale: %d' %
-                    (equation, kernel.__name__, freq_scale))
-
-                trick_paras = {
-                    'equation': equation,
-                    'init_u_trick': init_func.zeros,
-                    'num_u_trick': 1,
-                    'Q': 30,
-                    'lr': 1e-2,
-                    'llk_weight': 200.0,
-                    'kernel': kernel,
-                    'kernel_extra': None,
-                    'nepoch': 100000,
-                    'freq_scale': freq_scale,
-                    'logdet': True,
-                    'num_fold': 1,
-                    'tol': 1e-2,
-                    'other_paras': '-x-2pi',
-                    'scale':2*np.pi,
-                    'N_col': N_col,
-                }
-
-                trick_paras['other_paras'] = trick_paras['other_paras'] + '-Ncol-%d' % trick_paras['N_col']
-
-                test(trick_paras)

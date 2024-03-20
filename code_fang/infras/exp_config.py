@@ -47,7 +47,8 @@ class ExpConfig(Config):
 
     equation = None
     kernel = None
-    max_epochs = 1000000
+    nepoch = 1000000
+    
 
     def __init__(self, ):
         super(ExpConfig, self).__init__()
