@@ -2,7 +2,8 @@
 
 ___
 
-Official implementation of the paper **"Solving High Frequency and Multi-Scale PDEs with Gaussian Processes"** [[OpenReview](https://openreview.net/forum?id=q4AEBLHuA6&referrer=%5BAuthor%20Console%5D(%2Fgroup%3Fid%3DICLR.cc%2F2024%2FConference%2FAuthors%23your-submissions))][[Arxiv](https://arxiv.org/abs/2311.04465)] (ICLR 2024).
+Official implementation of the paper **"Solving High Frequency and Multi-Scale PDEs with Gaussian Processes"** [[OpenReview](https://openreview.net/forum?id=q4AEBLHuA6&referrer=%5BAuthor%20Console%5D(%2Fgroup%3Fid%3DICLR.cc%2F2024%2FConference%2FAuthors%23your-submissions))][[Arxiv](https://arxiv.org/abs/2311.04465)] (ICLR 2024), 
+by [Shikai Fang*](https://users.cs.utah.edu/~shikai/), [Madison Cooley*](https://users.cs.utah.edu/~mcooley/), [Da Long*](https://scholar.google.com/citations?user=UIY-EDEAAAAJ), [Shibo Li](https://imshibo.com/), [Robert Kirby](https://www.cs.utah.edu/~kirby/), [Shandian Zhe](https://www.cs.utah.edu/~kirby/). (*:equal contribution)
 
 
 ---

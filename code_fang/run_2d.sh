@@ -10,7 +10,7 @@
     # 
 
     #     2d-equation list:
-    #    
+    #     
     #    - poisson_2d-sin_sin --->2d Poission equation with solution:. sin(100 * x) * sin(100 * y) 
 
     #    - poisson_2d-sin_add_cos --->2d Poission equation with solution:. sin(6 * x) * jnp.cos(20 * x) + jnp.sin(6 * y) * jnp.cos(20 * y)
