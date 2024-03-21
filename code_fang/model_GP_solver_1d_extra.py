@@ -22,7 +22,7 @@ from model_GP_solver_1d import GP_solver_1d_single
 
 import yaml
 import fire
-from infras.misc import create_path
+# from infras.misc import create_path
 from infras.exp_config import ExpConfig
 
 '''GP solver for 1d equation with a extra GP, which can accelerate the convergence by capturing the low frequency part of the solution quickly, designed for the hard cases of poission-1d:  sin(x) + 0.1*sin(20x) + 0.05*cos(100x), and sin(500x)-2*(x-0.5)^2'''

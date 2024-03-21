@@ -20,7 +20,7 @@ import init_func
 
 import yaml
 import fire
-from infras.misc import create_path
+# from infras.misc import create_path
 from infras.exp_config import ExpConfig
 
 

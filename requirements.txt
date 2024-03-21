@@ -1,0 +1,8 @@
+fire==0.5.0
+jax==0.4.8
+matplotlib==3.6.2
+numpy==1.23.4
+optax==0.1.4
+pandas==2.0.2
+PyYAML==6.0.1
+tqdm==4.64.1

@@ -20,7 +20,8 @@ import init_func
 
 import yaml
 import fire
-from infras.misc import create_path
+# from infras.misc import create_path
+# from infras.exp_config import ExpConfig
 from infras.exp_config import ExpConfig
 
 '''GP solver class for 2d dynamics with single kernel,
