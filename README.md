@@ -8,18 +8,17 @@ by [Shikai Fang*](https://users.cs.utah.edu/~shikai/), [Madison Cooley*](https:/
 
 ---
 ## Key Idea: 
-- Assign a Gaussian Process (GP) prior to the PDE solution $f(\cdot)$, and track its derivative (also a GP) with *kernel   differential trick.*
+- model the PDE solution in **frequency domain** using *Gaussian Processes(GP)*.
 
 
-<div align=center> <img src="./figs_repo/eq1.PNG" width = 50%/> </div>
-
-<div align=center> <img src="./figs_repo/eq2.PNG" width = 70%/> </div>
+<div align=center> <img src="./figs_repo/poster_1.PNG" width = 90%/> </div>
 
 
-- Use *Spectral Mixture Kernel* in the log domian as Jeffreys prior, automatically induce the sparsity and capture the high-frequency components of the solution.
-<div align=center> <img src="./figs_repo/eq3.PNG" width = 80%/> </div>
+- Efficient Inference by maximizing log-joint prob over *structured kernels*:
 
-<div align=center> <img src="./figs_repo/eq4.PNG" width = 90%/> </div>
+<div align=center> <img src="./figs_repo/poster_2.PNG" width = 90%/> </div>
+
+<div align=center> <img src="./figs_repo/poster_3.PNG" width = 90%/> </div>
 
 ---
 Illustration of the learned solutions of some high-frequency PDEs. 
