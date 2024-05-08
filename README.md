@@ -11,14 +11,13 @@ by [Shikai Fang*](https://users.cs.utah.edu/~shikai/), [Madison Cooley*](https:/
 - model the PDE solution in **frequency domain** using *Gaussian Processes(GP)*.
 
 
-<div align=center> <img src="./figs_repo/poster_1.PNG" width = 90%/> </div>
+<div align=center> <img src="./figs_repo/poster_1.PNG" width = 80%/> </div>
 
 
 - Efficient Inference by maximizing log-joint prob over *structured kernels*:
 
-<div align=center> <img src="./figs_repo/poster_2.PNG" width = 90%/> </div>
+<div align=center> <img src="./figs_repo/poster_2.PNG" width = 80%/> </div>
 
-<div align=center> <img src="./figs_repo/poster_3.PNG" width = 90%/> </div>
 
 ---
 Illustration of the learned solutions of some high-frequency PDEs. 
