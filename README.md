@@ -50,13 +50,11 @@ The project is mainly built with **Jax 0.4.8** under **python 3.10**. See detail
 
 Please cite our work if you would like it
 ```
-@misc{fang2024solving,
+@inproceedings{fang2024solving,
       title={Solving High Frequency and Multi-Scale PDEs with Gaussian Processes}, 
       author={Shikai Fang and Madison Cooley and Da Long and Shibo Li and Robert Kirby and Shandian Zhe},
-      year={2024},
-      eprint={2311.04465},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG}
+      booktitle={International Conference on Learning Representation},
+      year={2024}
 }
 ```
 
